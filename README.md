@@ -1,7 +1,7 @@
 # SilentKnightIDC
 ---
 
-### Team
+### IDC Team Members
 - Landon Stott - The Quantum Cryptologist (QA Lead)
 - Gabriel Palma - The Hash Herold (Subdivision Leader)
 - Gavin Walter - The Cybernetic Centurion (Division Leader)

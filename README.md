@@ -1,3 +1,4 @@
+![Silent Knight](https://github.com/user-attachments/assets/771c89cf-03d4-4d41-aaba-f87b7f7a01b8)
 # SilentKnightIDC - prepared by Team IDC
 ---
 

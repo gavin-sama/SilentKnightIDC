@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Welcome to your Dashboard</h2>
+    <p>Send and receive messages here.</p>
+    
+    <h3>Send a Message</h3>
+    <form action="/send" method="POST">
+        <label for="receiver">Send to:</label>
+        <input type="text" id="receiver" name="receiver" required><br><br>
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea><br><br>
+        <button type="submit">Send</button>
+    </form>
+    
+    <h3>Inbox</h3>
+    <ul>
+        <!-- Messages will be displayed here -->
+    </ul>
+    
+    <br>
+    <a href="/logout">Logout</a>
+</body>
+</html>

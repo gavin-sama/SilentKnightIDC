@@ -5,15 +5,19 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #f4f4f4;
+    margin: 0;
 }
+
 .container {
     background: white;
-    padding: 20px;
+    padding: 20px 40px 20px 20px;       /* left padding is 20px and right padding is 40px */
+    margin: 0 auto;         /* center the container */
     border-radius: 8px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     width: 300px;
     text-align: center;
 }
+
 input, textarea {
     width: 100%;
     padding: 10px;
@@ -21,6 +25,7 @@ input, textarea {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
 button {
     background-color: #007BFF;
     color: white;
@@ -30,6 +35,30 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
+
 button:hover {
     background-color: #0056b3;
+}
+
+h3 {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.message-section, .inbox-section {
+    margin-bottom: 20px;
+}
+
+.logout-link {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.logout-link a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.logout-link a:hover {
+    text-decoration: underline;
 }

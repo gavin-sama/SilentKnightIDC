@@ -7,24 +7,27 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Welcome to your Dashboard</h2>
-    <p>Send and receive messages here.</p>
-    
-    <h3>Send a Message</h3>
-    <form action="/send" method="POST">
-        <label for="receiver">Send to:</label>
-        <input type="text" id="receiver" name="receiver" required><br><br>
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" required></textarea><br><br>
-        <button type="submit">Send</button>
-    </form>
-    
-    <h3>Inbox</h3>
-    <ul>
-        <!-- Messages will be displayed here -->
-    </ul>
-    
-    <br>
-    <a href="/logout">Logout</a>
+    <div class="container">
+        <h2>Dashboard</h2>
+        <div class="message-section">
+            <h3>Send a Message</h3>
+            <form action="/send_message" method="POST">
+                <label for="receiver">Receiver Username:</label>
+                <input type="text" id="receiver" name="receiver" required><br><br>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea><br><br>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+        <div class="inbox-section">
+            <h3>Inbox</h3>
+            <ul>
+                <li>No new messages</li> <!-- Placeholder for messages -->
+            </ul>
+        </div>
+        <div class="logout-link">
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
 </body>
 </html>

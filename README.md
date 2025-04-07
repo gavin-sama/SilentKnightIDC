@@ -24,3 +24,7 @@ Team Focus Areas:
 * Secure messaging systems
 * Data integrity verification
 
+### Project Notes
+
+#### Code to run loginFastAPI.py
+python -m uvicorn loginFastAPI:app --host localhost --port 8000

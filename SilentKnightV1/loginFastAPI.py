@@ -25,6 +25,10 @@ class UserCreate(BaseModel):
     password: str
 
 # Endpoints
+@app.get("/")
+def read_root():
+    return {"Message":"SilentKnight Login API Working"}
+
 @app.get("/users")
 def read_users():
     db = SessionLocal()

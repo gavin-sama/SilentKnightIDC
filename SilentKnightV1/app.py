@@ -18,7 +18,7 @@ def login():
         password = request.form['password']
 
         try:
-            response = requests.get(FASTAPI_BASE_URL + "users")
+            response = requests.get(f"{FASTAPI_BASE_URL}/users")
             if response.status_code == 200:
                 users = response.json()
                 for user in users:
@@ -71,9 +71,6 @@ def dashboard():
     try:
         unformatted_messages = requests.get(f"FASTAPI_BASE_URL/messages/{username}").text
         messages = json.loads(unformatted_messages)
-
-        if len(messages) == 0:
-            return render_template('dashboard.html', username=username)
     except Exception as e:
         flash(f'API error: {str(e)}')
 

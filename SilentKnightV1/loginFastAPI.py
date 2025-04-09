@@ -16,6 +16,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    messages = Column(String)
 
 app = FastAPI()
 
@@ -23,6 +24,11 @@ app = FastAPI()
 class UserCreate(BaseModel):
     username: str
     password: str
+    messages: str
+
+class Message(BaseModel):
+    receiver: str
+    message: str
 
 # Endpoints
 @app.get("/")
@@ -44,9 +50,50 @@ def create_user(user: UserCreate):
         db.close()
         raise HTTPException(status_code=400, detail="Username already exists")
     
-    new_user = User(username=user.username, password=user.password)
+    new_user = User(**user.model_dump())
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     db.close()
     return new_user
+
+@app.post("/send_message")
+def append_message(message_info: Message):
+    db = SessionLocal()
+
+    receiving_user = db.query(User).filter(User.username == message_info.receiver).first()
+    if receiving_user is None:
+        db.close()
+        raise HTTPException(status_code=400, detail="Username not found")
+
+    indices_open_bracket = [i for i in range(len(receiving_user.messages)) if receiving_user.messages[i] == "["]
+    indices_closed_bracket = [i for i in range(len(receiving_user.messages)) if receiving_user.messages[i] == "]"]
+
+    list_opening = receiving_user.messages[:indices_open_bracket[0]]
+    list_messages = receiving_user.messages[indices_open_bracket[0] + 1:indices_closed_bracket[len(indices_closed_bracket) - 1]]
+    list_closing = receiving_user.messages[indices_closed_bracket[len(indices_closed_bracket) - 1] + 1:]
+
+    if len(list_messages) == 1:
+        list_messages = f'"{message_info.message}"'
+    else:
+        list_messages += f', "{message_info.message}"'
+
+    receiving_user.messages = list_opening + list_messages + list_closing
+
+    db.commit()
+    db.refresh(receiving_user)
+    db.close()
+
+    return receiving_user.messages
+
+@app.get("/messages/{username}")
+def read_all_messages(username: str):
+    db = SessionLocal()
+
+    valid_user = db.query(User).filter(User.username == username).first()
+    if valid_user:
+        db.close()
+        return valid_user.messages
+    
+    db.close()
+    raise HTTPException(status_code=400, detail="Username not found")

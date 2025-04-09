@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import requests
+import json
 
 app = Flask(__name__)
 app.secret_key = 'demokey'
 
-FASTAPI_BASE_URL = "http://localhost:8000/users"
+FASTAPI_BASE_URL = "http://localhost:8000/"
 
 @app.route('/')
 def index():
@@ -17,7 +18,7 @@ def login():
         password = request.form['password']
 
         try:
-            response = requests.get(FASTAPI_BASE_URL)
+            response = requests.get(FASTAPI_BASE_URL + "users")
             if response.status_code == 200:
                 users = response.json()
                 for user in users:
@@ -42,9 +43,10 @@ def register():
         password = request.form['password']
 
         try:
-            response = requests.post(FASTAPI_BASE_URL, json={
+            response = requests.post(f"{FASTAPI_BASE_URL}/users", json={
                 "username": username,
-                "password": password
+                "password": password,
+                "messages": "[]"
             })
 
             if response.status_code == 200:
@@ -64,7 +66,41 @@ def register():
 @app.route('/dashboard')
 def dashboard():
     username = session.get('username')
-    return render_template('dashboard.html', username=username)
+    messages = []
+
+    try:
+        unformatted_messages = requests.get(f"FASTAPI_BASE_URL/messages/{username}").text
+        messages = json.loads(unformatted_messages)
+
+        if len(messages) == 0:
+            return render_template('dashboard.html', username=username)
+    except Exception as e:
+        flash(f'API error: {str(e)}')
+
+    return render_template('dashboard.html', username=username, messages=messages)
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    receiver = request.form['receiver']
+    message = request.form['message']
+
+    try:
+        response = requests.post(f"FASTAPI_BASE_URL/send_message", json={
+            "receiver": receiver,
+            "message": message
+        })
+
+        if response.status_code == 200:
+            flash('Message sent.')
+            return redirect(url_for('login'))
+        elif response.status_code == 400:
+            flash('User not found.')
+        else:
+                flash('Error sending message.')
+    except Exception as e:
+        flash(f'API error: {str(e)}')
+
+    return redirect(url_for('dashboard'))
 
 
 if __name__ == '__main__':

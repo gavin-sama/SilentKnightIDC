@@ -26,7 +26,19 @@
         <div class="inbox-section">
             <h3>Inbox</h3>
             <ul>
-                <li>No new messages</li> <!-- Placeholder for messages -->
+                {% if messages %}
+
+                {% for message in messages %}
+
+                <li>"{{ message }}"</li>
+
+                {% endfor %}
+
+                {% else %}
+
+                <li>No messages</li>
+
+                {% endif %}
             </ul>
         </div>
         <div class="logout-link">

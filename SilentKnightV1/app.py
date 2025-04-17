@@ -5,7 +5,7 @@ import json
 app = Flask(__name__)
 app.secret_key = 'demokey'
 
-FASTAPI_BASE_URL = "http://localhost:8000/"
+FASTAPI_BASE_URL = "http://localhost:8000"
 
 @app.route('/')
 def index():
@@ -24,13 +24,13 @@ def login():
                 for user in users:
                     if user['username'] == username and user['password'] == password:
                         session['username'] = username
-                        flash('Login successful')
+                        print('Login successful')
                         return redirect(url_for('dashboard'))
-                flash('Invalid username or password')
+                print('Invalid username or password')
             else:
-                flash('Error contacting user service')
+                print('Error contacting user service')
         except Exception as e:
-            flash(f'API error: {str(e)}')
+            print(f'API error: {str(e)}')
 
         return redirect(url_for('login'))
 
@@ -45,19 +45,18 @@ def register():
         try:
             response = requests.post(f"{FASTAPI_BASE_URL}/users", json={
                 "username": username,
-                "password": password,
-                "messages": "[]"
+                "password": password
             })
 
             if response.status_code == 200:
-                flash('Registration successful. Please log in.')
+                print('Registration successful. Please log in.')
                 return redirect(url_for('login'))
             elif response.status_code == 400:
-                flash('Username already exists.')
+                print('Username already exists.')
             else:
-                flash('Error creating user.')
+                print('Error creating user.')
         except Exception as e:
-            flash(f'API error: {str(e)}')
+            print(f'API error: {str(e)}')
 
         return redirect(url_for('register'))
 
@@ -69,33 +68,35 @@ def dashboard():
     messages = []
 
     try:
-        unformatted_messages = requests.get(f"FASTAPI_BASE_URL/messages/{username}").text
-        messages = json.loads(unformatted_messages)
+        results = requests.get(f"{FASTAPI_BASE_URL}/messages/{username}")
+        messages = results.json()
     except Exception as e:
-        flash(f'API error: {str(e)}')
-
+        print(f'API error: {str(e)}')
+    
     return render_template('dashboard.html', username=username, messages=messages)
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
-    receiver = request.form['receiver']
-    message = request.form['message']
+    sender = session.get('username')
+    receiver = request.form.get('receiver')
+    message = request.form.get('message')
 
     try:
-        response = requests.post(f"FASTAPI_BASE_URL/send_message", json={
+        response = requests.post(f"{FASTAPI_BASE_URL}/send_message", json={
+            "sender": sender,
             "receiver": receiver,
             "message": message
         })
 
         if response.status_code == 200:
-            flash('Message sent.')
-            return redirect(url_for('login'))
+            print('Message sent.')
+            return redirect(url_for('dashboard'))
         elif response.status_code == 400:
-            flash('User not found.')
+            print('User not found.')
         else:
-                flash('Error sending message.')
+            print('Error sending message.')
     except Exception as e:
-        flash(f'API error: {str(e)}')
+        print(f'API error: {str(e)}')
 
     return redirect(url_for('dashboard'))
 

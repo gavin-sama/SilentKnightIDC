@@ -14,10 +14,16 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, nullable=False)
+    username = Column(String, primary_key=True, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    messages = Column(String)
+
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    sender = Column(String, nullable=False)
+    receiver = Column(String, nullable=False)
+    message = Column(String, nullable=False)
 
 app = FastAPI()
 
@@ -25,9 +31,9 @@ app = FastAPI()
 class UserCreate(BaseModel):
     username: str
     password: str
-    messages: str
 
-class Message(BaseModel):
+class MessageCreate(BaseModel):
+    sender: str
     receiver: str
     message: str
 
@@ -57,64 +63,52 @@ def create_user(user: UserCreate):
     new_user = User(**user.model_dump())
     db.add(new_user)
     db.commit()
-    db.refresh(new_user)
     db.close()
-    return new_user
 
 @app.post("/send_message")
-def append_message(message_info: Message):
+def append_message(message_info: MessageCreate):
     db = SessionLocal()
 
-    receiving_user = db.query(User).filter(User.username == message_info.receiver).first()
+    receiving_user = db.query(User).filter(User.username == message_info.receiver).first().username
     if not receiving_user:
         db.close()
         raise HTTPException(status_code=404, detail="Username not found")
 
-    # indices_open_bracket = [i for i in range(len(receiving_user.messages)) if receiving_user.messages[i] == "["]
-    # indices_closed_bracket = [i for i in range(len(receiving_user.messages)) if receiving_user.messages[i] == "]"]
+    new_message = Message(**message_info.model_dump())
 
-    # list_opening = receiving_user.messages[:indices_open_bracket[0]]
-    # list_messages = receiving_user.messages[indices_open_bracket[0] + 1:indices_closed_bracket[len(indices_closed_bracket) - 1]]
-    # list_closing = receiving_user.messages[indices_closed_bracket[len(indices_closed_bracket) - 1] + 1:]
-
-    # if len(list_messages) == 1:
-    #     list_messages = f'"{message_info.message}"'
-    # else:
-    #     list_messages += f', "{message_info.message}"'
-
-    # receiving_user.messages = list_opening + list_messages + list_closing
-
-    messages_list = json.loads(receiving_user.messages)
-    messages_list.append(message_info.message)
-
-    receiving_user.messages = json.dumps(messages_list)
-
+    db.add(new_message)
     db.commit()
-    db.refresh(receiving_user)
     db.close()
-
-    return receiving_user.messages
 
 @app.get("/messages/{username}")
 def read_all_messages(username: str):
     db = SessionLocal()
 
-    valid_user = db.query(User).filter(User.username == username).first()
+    valid_user = db.query(User).filter(User.username == username).first().username
     if valid_user:
+        result_messages = db.query(Message).filter(Message.receiver == username).all()
         db.close()
-        return valid_user.messages
+        return result_messages
     
     db.close()
     raise HTTPException(status_code=400, detail="Username not found")
 
 @app.post("/delete_messages")
-def delete_messages(username: str):
+def delete_messages(receiver: str):
     db = SessionLocal()
-    user = db.query(User).filter(User.username == username).first()
+    results = db.query(Message).filter(Message.receiver == receiver).all()
 
-    user.messages = json.dumps([])
+    db.delete(results)
 
     db.commit()
-    db.refresh(user)
     db.close()
-    return user
+
+@app.post("/delete_user")
+def delete_user(username: str):
+    db = SessionLocal()
+    results = db.query(User).filter(User.username == username).first()
+
+    db.delete(results)
+
+    db.commit()
+    db.close()

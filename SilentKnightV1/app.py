@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import requests
 import json
+from cryptography.fernet import Fernet
+import random
 
 app = Flask(__name__)
 app.secret_key = 'demokey'
 
-FASTAPI_BASE_URL = "http://localhost:8000/"
+FASTAPI_BASE_URL = "http://localhost:8000"
 
 @app.route('/')
 def index():
@@ -24,13 +26,13 @@ def login():
                 for user in users:
                     if user['username'] == username and user['password'] == password:
                         session['username'] = username
-                        flash('Login successful')
+                        print('Login successful')
                         return redirect(url_for('dashboard'))
-                flash('Invalid username or password')
+                print('Invalid username or password')
             else:
-                flash('Error contacting user service')
+                print('Error contacting user service')
         except Exception as e:
-            flash(f'API error: {str(e)}')
+            print(f'API error: {str(e)}')
 
         return redirect(url_for('login'))
 
@@ -41,27 +43,48 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        encryption = random.randint(1, 6)
 
         try:
             response = requests.post(f"{FASTAPI_BASE_URL}/users", json={
                 "username": username,
                 "password": password,
-                "messages": "[]"
+                "encryption": encryption
             })
 
             if response.status_code == 200:
-                flash('Registration successful. Please log in.')
+                print('Registration successful. Please log in.')
                 return redirect(url_for('login'))
             elif response.status_code == 400:
-                flash('Username already exists.')
+                print('Username already exists.')
             else:
-                flash('Error creating user.')
+                print('Error creating user.')
         except Exception as e:
-            flash(f'API error: {str(e)}')
+            print(f'API error: {str(e)}')
 
         return redirect(url_for('register'))
 
     return render_template('register.html')
+
+def encryption_selection(index:int):
+    methods = {
+        1:b'zVc8E3DjCtAoKYP6zTGNmPARxbTNmbwfW31tVosWy9E=',
+        2:b'pfqKiXQMbowu3d64FZtZEOrbdIrGM3RsmJjRk4HW5Ps=',
+        3:b'6sRtHQuy-yAufN1RSxbFTjsy_51UZ03C-hEh82wr-RE=',
+        4:b'lJvrxODR4I31shhGrZQy-g1eDhYdLiXu5FG9YL7BJQs=',
+        5:b'6TMfuujqXlaRK_acTzmyfZsNBtxIA0WZBt_cjmQv3-4=',
+        6:b'87j-OoSkh_009MkuwkZpiuuq2ejU7DXbLS-1OqRS4EE='
+    }
+
+    return methods[int(index)]
+
+def encrypt_message(encryption:int, message:str):
+    cipher_suite = Fernet(encryption_selection(encryption))
+    return cipher_suite.encrypt(message.encode()).decode()
+
+def decrypt_message(encryption:int, message:str):
+    cipher_suite = Fernet(encryption_selection(encryption))
+    return cipher_suite.decrypt(message.encode()).decode()
 
 @app.route('/dashboard')
 def dashboard():
@@ -69,33 +92,42 @@ def dashboard():
     messages = []
 
     try:
-        unformatted_messages = requests.get(f"FASTAPI_BASE_URL/messages/{username}").text
-        messages = json.loads(unformatted_messages)
+        results = requests.get(f"{FASTAPI_BASE_URL}/messages/{username}")
+        messages = results.json()
+        receiver_encryption = requests.get(f"{FASTAPI_BASE_URL}/encryption/{username}").text
+        for message in messages:
+            message["message"] = decrypt_message(int(receiver_encryption), message["message"])
     except Exception as e:
-        flash(f'API error: {str(e)}')
-
+        print(f'API error: {str(e)}')
+    
     return render_template('dashboard.html', username=username, messages=messages)
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
-    receiver = request.form['receiver']
-    message = request.form['message']
+    sender = session.get('username')
+    receiver = request.form.get('receiver')
+    message = request.form.get('message')
+
+    receiver_encryption = requests.get(f"{FASTAPI_BASE_URL}/encryption/{receiver}").text
+
+    message = encrypt_message(int(receiver_encryption), message)
 
     try:
-        response = requests.post(f"FASTAPI_BASE_URL/send_message", json={
+        response = requests.post(f"{FASTAPI_BASE_URL}/send_message", json={
+            "sender": sender,
             "receiver": receiver,
             "message": message
         })
 
         if response.status_code == 200:
-            flash('Message sent.')
-            return redirect(url_for('login'))
+            print('Message sent.')
+            return redirect(url_for('dashboard'))
         elif response.status_code == 400:
-            flash('User not found.')
+            print('User not found.')
         else:
-                flash('Error sending message.')
+            print('Error sending message.')
     except Exception as e:
-        flash(f'API error: {str(e)}')
+        print(f'API error: {str(e)}')
 
     return redirect(url_for('dashboard'))
 

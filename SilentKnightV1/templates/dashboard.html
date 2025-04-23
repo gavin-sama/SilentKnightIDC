@@ -15,7 +15,7 @@
         <h2>Dashboard</h2>
         <div class="message-section">
             <h3>Send a Message</h3>
-            <form action="/send_message" method="POST">
+            <form action="/send_message" method="post">
                 <label for="receiver">Receiver Username:</label>
                 <input type="text" id="receiver" name="receiver" required><br><br>
                 <label for="message">Message:</label>
@@ -25,12 +25,15 @@
         </div>
         <div class="inbox-section">
             <h3>Inbox</h3>
-            <ul>
+            <ul style="list-style-type:square; display:inline-block; text-align:left">
                 {% if messages %}
 
                 {% for message in messages %}
 
-                <li>"{{ message }}"</li>
+                <li>
+                    <p>"{{ message.message }}"</p>
+                    <p>- {{ message.sender }}</p>
+                </li>
 
                 {% endfor %}
 

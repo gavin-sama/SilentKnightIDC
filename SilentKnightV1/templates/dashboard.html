@@ -25,14 +25,15 @@
         </div>
         <div class="inbox-section">
             <h3>Inbox</h3>
-            <ul>
+            <ul style="list-style-type:square; display:inline-block; text-align:left">
                 {% if messages %}
-
-                <p>{{ messages }}</p>
 
                 {% for message in messages %}
 
-                <p>{{ message }}</p>
+                <li>
+                    <p>"{{ message.message }}"</p>
+                    <p>- {{ message.sender }}</p>
+                </li>
 
                 {% endfor %}
 

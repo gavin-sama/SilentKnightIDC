@@ -1,72 +1,309 @@
+/* SilentKnight V1 - Encrypted Theme CSS */
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap');
+
+:root {
+  --main-bg-color: #0a0e17;
+  --secondary-bg: #121923;
+  --accent-color: #1ae025;
+  --accent-glow: rgba(26, 224, 37, 0.4);
+  --text-color: #c5d1eb;
+  --error-color: #ff3a3a;
+  --border-color: #1f2b3e;
+  --button-hover: #0e5c14;
+  --input-bg: rgba(15, 25, 40, 0.8);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Source Code Pro', monospace;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4;
-    margin: 0;
+  background-color: var(--main-bg-color);
+  color: var(--text-color);
+  background-image: 
+    radial-gradient(rgba(26, 224, 37, 0.05) 2px, transparent 2px),
+    repeating-linear-gradient(
+      transparent 0px,
+      transparent 6px,
+      rgba(15, 25, 40, 0.3) 6px,
+      rgba(15, 25, 40, 0.3) 7px
+    );
+  background-size: 50px 50px, 100% 7px;
+  line-height: 1.6;
+  position: relative;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    rgba(10, 14, 23, 0.8),
+    rgba(10, 14, 23, 0.7)
+  );
+  z-index: -1;
 }
 
 .container {
-    background: white;
-    padding: 20px 40px 20px 20px;       /* left padding is 20px and right padding is 40px */
-    margin: 0 auto;         /* center the container */
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 25px;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  box-shadow: 0 0 20px rgba(26, 224, 37, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-input, textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-color);
+  box-shadow: 0 0 15px var(--accent-glow);
+  animation: scan 3s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(800px);
+    opacity: 0.5;
+  }
+}
+
+h2, h3 {
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 5px var(--accent-glow);
+  position: relative;
+  display: inline-block;
+}
+
+h2::after, h3::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--accent-color), transparent);
+}
+
+input[type="text"], input[type="password"], textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  font-size: 14px;
+  border-radius: 3px;
+  transition: all 0.3s;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 5px var(--accent-glow);
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(197, 209, 235, 0.5);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
 }
 
 button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px;
-    width: 100%;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
 }
 
 button:hover {
-    background-color: #0056b3;
+  background-color: var(--button-hover);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
-h3 {
-    margin-top: 20px;
-    font-size: 18px;
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(26, 224, 37, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
 }
 
-.message-section, .inbox-section {
-    margin-bottom: 20px;
+button:hover::before {
+  left: 100%;
 }
 
-.logout-link {
-    margin-top: 20px;
-    font-size: 14px;
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: all 0.3s;
+  position: relative;
 }
 
-.logout-link a {
-    color: #007BFF;
-    text-decoration: none;
+a:hover {
+  text-shadow: 0 0 5px var(--accent-glow);
 }
 
-.logout-link a:hover {
-    text-decoration: underline;
+a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--accent-color);
+  transition: width 0.3s;
+}
+
+a:hover::after {
+  width: 100%;
 }
 
 .user-info {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 0.9rem;
-    color: #555;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 5px 10px;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.message-section, .inbox-section {
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  background-color: rgba(15, 25, 40, 0.4);
+  border-radius: 3px;
+  position: relative;
+}
+
+.message-section::before, .inbox-section::before {
+  content: ">";
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.inbox-section ul {
+  padding-left: 20px;
+  list-style-type: none; /* Remove bullet points */
+}
+
+.inbox-section li {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-left: 2px solid var(--accent-color);
+  background-color: rgba(15, 25, 40, 0.5);
+  position: relative;
+}
+
+.inbox-section li p:first-child {
+  margin-bottom: 5px;
+  font-style: italic;
+}
+
+.inbox-section li p:last-child {
+  text-align: right;
+  font-size: 12px;
+  color: var(--accent-color);
+}
+
+.logout-link, .register-link, .login-link {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Animated encrypted text effect for headings */
+@keyframes textScramble {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+h2, h3 {
+  animation: textScramble 4s infinite;
+}
+
+/* Loading animation for form submission */
+button[type="submit"]::after {
+  content: "...";
+  position: absolute;
+  right: -20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+button[type="submit"]:active::after {
+  opacity: 1;
+}
+
+/* Binary overlay for the container background */
+.container::after {
+  content: "01010011 01101001 01101100 01100101 01101110 01110100 01001011 01101110 01101001 01100111 01101000 01110100";
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  font-size: 6px;
+  opacity: 0.2;
+  color: var(--accent-color);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Media queries for responsive design */
+@media screen and (max-width: 768px) {
+  .container {
+    margin: 20px;
+    padding: 15px;
+  }
+  
+  input, textarea, button {
+    font-size: 14px;
+  }
 }

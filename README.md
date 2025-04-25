@@ -30,6 +30,8 @@ Team Focus Areas:
 python -m uvicorn loginFastAPI:app --host localhost --port 8000
 
 ### Code to run test cases 
-#pip install pytest httpx
-#pip install pytest
+pip install pytest httpx
+
+pip install pytest
+
 python -m pytest test_main.py -v

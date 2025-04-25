@@ -28,3 +28,6 @@ Team Focus Areas:
 
 #### Code to run loginFastAPI.py
 python -m uvicorn loginFastAPI:app --host localhost --port 8000
+
+### Code to run test cases 
+python -m pytest test_main.py -v

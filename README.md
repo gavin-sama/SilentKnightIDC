@@ -26,10 +26,13 @@ Team Focus Areas:
 
 ### Project Notes
 
-#### Code to run loginFastAPI.py
+#### Script to run loginFastAPI.py
 python -m uvicorn loginFastAPI:app --host localhost --port 8000
 
-### Code to run test cases 
+### Code packages to run app.py
+pip install cryptography
+
+### Code packages to run test cases 
 pip install pytest httpx
 
 pip install pytest
